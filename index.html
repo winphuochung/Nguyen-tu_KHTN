@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>App Nguyên Tử - Vũ Trụ Nguyên Tử (KHTN 7 KNTT)</title>
+  <meta name="description" content="Ứng dụng học tập tương tác 3D, đối kháng kéo co PvP thời gian thực, ngân hàng câu hỏi đa tầng và thuật toán Adaptive Learning theo chuẩn SGK Kết nối tri thức với cuộc sống." />
+  <link rel="icon" type="image/png" href="logo.png" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- TOP HEADER & NAVIGATION -->
+    <header class="galaxy-header">
+      <div class="header-inner">
+        <div class="logo-brand" onclick="switchMainTab('lab')" title="Nguyên tử">
+          <img src="logo.png" alt="Logo Trường TH & THCS Phước Hưng" class="app-header-logo" />
+          <div class="logo-text">
+            <h1 class="brand-app-name">Nguyên tử</h1>
+          </div>
+        </div>
+
+        <nav class="nav-tabs">
+          <button class="nav-tab-btn active" data-tab="lab">
+            <span>🪐</span> 3D Lab & Lý Thuyết
+          </button>
+          <button class="nav-tab-btn" data-tab="tug">
+            <span>⚔️</span> Kéo Co PvP
+          </button>
+          <button class="nav-tab-btn" data-tab="quiz">
+            <span>🎯</span> Luyện Tập Đa Tầng
+          </button>
+          <button class="nav-tab-btn" data-tab="leaderboard">
+            <span>🏆</span> Bảng Vàng & Badges
+          </button>
+          <button class="nav-tab-btn" data-tab="teacher">
+            <span>📊</span> Dashboard Giáo Viên
+          </button>
+        </nav>
+
+        <div class="header-actions">
+          <button class="audio-toggle-btn" id="btn-audio-toggle" onclick="toggleGlobalAudio()">
+            🔊 Âm thanh
+          </button>
+
+          <div class="user-status-card" id="user-status-card" style="display: none;">
+            <div class="user-avatar">👨‍🎓</div>
+            <div class="user-meta">
+              <span class="user-name" id="user-display-name">Học sinh</span>
+              <span class="user-class" id="user-display-class">Lớp: KHTN7A1</span>
+            </div>
+            <button class="btn-logout" title="Đổi tài khoản / Đăng xuất" onclick="handleLogout()">
+              <span>🚪</span> Đăng xuất
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-wrapper">
+
+      <!-- ================= TAB 1: 3D LAB & LÝ THUYẾT ================= -->
+      <section class="tab-pane active" id="pane-lab">
+        <div class="atom-lab-grid">
+          <!-- Cột Trái: Canvas 3D & Thanh chọn 20 nguyên tố -->
+          <div class="canvas-card">
+            <div class="canvas-header">
+              <div class="element-headline">
+                <h2 id="atom-display-name">Cacbon (Carbon)</h2>
+                <span id="atom-display-formula">Số hiệu nguyên tử Z = 6 | Phi kim</span>
+              </div>
+              <div class="canvas-toolbar">
+                <button class="tool-btn" onclick="window.atomViewer.resetView()" title="Đặt lại góc nhìn">🔄 Đặt lại</button>
+                <button class="tool-btn" onclick="window.atomViewer.toggleAnimation()" title="Tạm dừng chuyển động">⏯️ Dừng/Chạy</button>
+                <button class="tool-btn" onclick="window.atomViewer.toggleOrbits()" title="Ẩn/Hiện quỹ đạo">⭕ Quỹ đạo</button>
+              </div>
+            </div>
+
+            <div class="canvas-container" id="canvas-wrapper">
+              <canvas id="atom3dCanvas"></canvas>
+              <div class="canvas-hint">🖐️ Kéo xoay 360° • Cuộn chuột / Chụm 2 ngón tay để Zoom • Chạm vào hạt để xem điện tích</div>
+            </div>
+
+            <!-- Thanh trượt 20 nguyên tố KNTT -->
+            <div class="elements-bar-wrap">
+              <h4>BẢNG 20 NGUYÊN TỐ HÓA HỌC ĐẦU TIÊN (KHTN 7)</h4>
+              <div class="elements-scroll" id="elements-scroll-bar">
+                <!-- Được điền bởi app.js -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Cột Phải: Thông số cấu tạo chi tiết & Ứng dụng -->
+          <div class="atom-specs-card">
+            <h3 class="specs-title">Cấu Tạo Hạt Cơ Bản</h3>
+            <div class="specs-list">
+              <div class="spec-item">
+                <span class="spec-label">Hạt Proton (p, +1):</span>
+                <span class="spec-val p-val" id="atom-p-count">6</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-label">Hạt Neutron (n, 0):</span>
+                <span class="spec-val n-val" id="atom-n-count">6</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-label">Hạt Electron (e, -1):</span>
+                <span class="spec-val e-val" id="atom-e-count">6</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-label">Khối lượng nguyên tử:</span>
+                <span class="spec-val" id="atom-mass-amu">12 amu</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-label">Phân bố electron (vỏ):</span>
+                <span class="spec-val" id="atom-shells-dist">2 - 4</span>
+              </div>
+            </div>
+
+            <div class="app-box">
+              <strong>Ứng dụng thực tế đời sống:</strong>
+              <p id="atom-application-text">Cơ sở của mọi dạng sống hữu cơ; kim cương (trang sức), than chì (ruột bút chì), sợi carbon siêu bền.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- HỆ THỐNG HÓA LÝ THUYẾT TRỌNG TÂM SGK KNTT -->
+        <div style="margin-top: 2.5rem;">
+          <div class="badge-tag">HỌC LIỆU CHUẨN SGK</div>
+          <h2 class="glow-title">HỆ THỐNG HÓA LÝ THUYẾT BÀI 2: NGUYÊN TỬ</h2>
+          <div class="theory-grid" id="theory-cards-container">
+            <!-- Điền bởi app.js -->
+          </div>
+        </div>
+
+        <!-- THƯ VIỆN MICRO-LEARNING (< 2 PHÚT) -->
+        <div style="margin-top: 2.5rem;">
+          <div class="badge-tag">MICRO-LEARNING VIDEO</div>
+          <h2 class="glow-title">VIDEO GIẢI THÍCH TRỰC QUAN KHÁI NIỆM TRỪU TƯỢNG</h2>
+          <div class="micro-carousel-grid" id="micro-learning-container">
+            <!-- Điền bởi app.js -->
+          </div>
+        </div>
+
+        <!-- CHUYÊN MỤC "EM CÓ BIẾT?" -->
+        <div style="margin-top: 2.5rem; margin-bottom: 2rem;">
+          <div class="badge-tag">MỞ RỘNG TRI THỨC</div>
+          <h2 class="glow-title">EM CÓ BIẾT? - ỨNG DỤNG NGUYÊN TỬ KỲ DIỆU</h2>
+          <div class="didyouknow-grid" id="did-you-know-container">
+            <!-- Điền bởi app.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 2: KÉO CO KIẾN THỨC (REAL-TIME PVP) ================= -->
+      <section class="tab-pane" id="pane-tug">
+        <div id="tug-of-war-container">
+          <!-- Được quản lý bởi tugOfWarGame.js -->
+        </div>
+      </section>
+
+      <!-- ================= TAB 3: LUYỆN TẬP ĐA TẦNG & AI ================= -->
+      <section class="tab-pane" id="pane-quiz">
+        <div id="quiz-subnav"></div>
+        <div id="quiz-engine-container">
+          <!-- Được quản lý bởi quizEngine.js -->
+        </div>
+      </section>
+
+      <!-- ================= TAB 4: BẢNG XẾP HẠNG & BADGES ================= -->
+      <section class="tab-pane" id="pane-leaderboard">
+        <div class="leaderboard-grid">
+          <!-- Bảng xếp hạng -->
+          <div class="lb-table-card">
+            <div class="badge-tag">ĐẤU TRƯỜNG KHTN 7</div>
+            <h2 class="glow-title">BẢNG XẾP HẠNG VŨ TRỤ</h2>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.2rem;">Xếp hạng dựa trên Độ chính xác (Accuracy), Tốc độ trả lời và Chuỗi chiến thắng PvP.</p>
+            <div id="leaderboard-list">
+              <!-- Điền bởi app.js -->
+            </div>
+          </div>
+
+          <!-- Huy hiệu vinh danh -->
+          <div class="badges-card">
+            <div class="badge-tag">GAMIFICATION</div>
+            <h2 class="glow-title">HUY HIỆU ĐẠT ĐƯỢC</h2>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.2rem;">Hoàn thành nhiệm vụ để thu thập danh hiệu ảo khoa học.</p>
+            <div class="badges-showcase" id="badges-list">
+              <!-- Điền bởi app.js -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 5: DASHBOARD GIÁO VIÊN ================= -->
+      <section class="tab-pane" id="pane-teacher">
+        <div id="teacher-dashboard-container">
+          <!-- Được quản lý bởi teacherDashboard.js -->
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL ĐĂNG NHẬP PHÂN QUYỀN (HỌC SINH / GIÁO VIÊN) -->
+  <div class="auth-overlay" id="auth-modal-overlay" style="display: none;">
+    <div class="auth-modal" style="position: relative;">
+      <button type="button" title="Đóng / Bỏ qua để trải nghiệm ngay" onclick="document.getElementById('auth-modal-overlay').style.display='none'" style="position: absolute; top: 12px; right: 15px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #cbd5e1; font-size: 1.1rem; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">✕</button>
+      <img src="logo.png" alt="Logo Trường" class="auth-modal-logo" />
+      <h2 class="auth-title">APP NGUYÊN TỬ</h2>
+      <p class="auth-sub">Vũ Trụ Nguyên Tử • KHTN 7 Kết nối tri thức</p>
+
+      <!-- Tab chọn vai trò đăng nhập -->
+      <div class="auth-role-tabs">
+        <button type="button" class="auth-role-btn active" id="btn-auth-tab-student" onclick="switchAuthRole('student')">
+          🎓 Dành Cho Học Sinh
+        </button>
+        <button type="button" class="auth-role-btn" id="btn-auth-tab-teacher" onclick="switchAuthRole('teacher')">
+          👩‍🏫 Dành Cho Giáo Viên
+        </button>
+      </div>
+
+      <!-- FORM DÀNH CHO HỌC SINH -->
+      <form class="auth-form" id="form-login-student" onsubmit="handleStudentLogin(event)">
+        <div>
+          <label for="auth-username">Họ và Tên / Biệt Danh Học Sinh:</label>
+          <input type="text" id="auth-username" class="auth-input" placeholder="Ví dụ: MinhTriet_7A1" required autocomplete="off" />
+        </div>
+        <div>
+          <label for="auth-class-select">Chọn Lớp Học:</label>
+          <div style="display: flex; gap: 0.5rem;">
+            <select id="auth-class-select" class="auth-input" style="flex: 1;">
+              <!-- Sẽ được nạp động từ các lớp giáo viên đã tạo -->
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn-cosmic-glow" style="width: 100%; margin-top: 0.6rem;">
+          🚀 BẮT ĐẦU KHÁM PHÁ
+        </button>
+        <p class="auth-privacy-note">
+          🔒 <strong>Bảo mật 100%:</strong> Không thu thập email, số điện thoại hay thông tin cá nhân nhạy cảm của học sinh.
+        </p>
+      </form>
+
+      <!-- FORM DÀNH CHO GIÁO VIÊN (BẢO MẬT BẰNG MẬT KHẨU QUẢN TRỊ) -->
+      <form class="auth-form" id="form-login-teacher" style="display: none;" onsubmit="handleTeacherLogin(event)">
+        <div>
+          <label for="auth-teacher-user">Họ và Tên Giáo Viên:</label>
+          <input type="text" id="auth-teacher-user" class="auth-input" placeholder="Ví dụ: Cô Hoàng Mai hoặc Thầy Tuấn" required autocomplete="off" />
+        </div>
+        <div>
+          <label for="auth-teacher-pass">Mật Khẩu Quản Trị:</label>
+          <input type="password" id="auth-teacher-pass" class="auth-input" placeholder="Nhập mật khẩu..." required />
+        </div>
+        <button type="submit" class="btn-cosmic-glow" style="width: 100%; margin-top: 0.6rem; background: linear-gradient(135deg, #7928ca, #00ff87);">
+          👩‍🏫 VÀO TRANG QUẢN TRỊ GIÁO VIÊN
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL XÁC THỰC GIÁO VIÊN KHI HỌC SINH BẤM VÀO TAB DASHBOARD -->
+  <div class="auth-overlay" id="teacher-verify-modal" style="display: none;">
+    <div class="auth-modal" style="max-width: 400px;">
+      <div style="font-size: 2.4rem; margin-bottom: 0.5rem;">🔐</div>
+      <h3 style="color:#ffffff; margin-bottom: 0.4rem;">XÁC THỰC QUYỀN GIÁO VIÊN</h3>
+      <p style="font-size: 0.82rem; color: #94a3b8; margin-bottom: 1.2rem;">Khu vực này chứa dữ liệu lớp học và phổ điểm. Vui lòng nhập mật khẩu giáo viên để tiếp tục:</p>
+
+      <form onsubmit="handleVerifyTeacherPassword(event)">
+        <div style="margin-bottom: 1rem; text-align: left;">
+          <label style="font-size: 0.8rem; color: #cbd5e1;">Mật khẩu quản trị:</label>
+          <input type="password" id="verify-teacher-pass" class="auth-input" placeholder="Nhập mật khẩu..." required />
+        </div>
+        <div style="display: flex; gap: 0.6rem; justify-content: flex-end;">
+          <button type="button" class="btn-secondary" onclick="document.getElementById('teacher-verify-modal').style.display='none'">Hủy Bỏ</button>
+          <button type="submit" class="btn-cosmic-glow" style="padding: 0.5rem 1.2rem;">Xác Nhận</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SCRIPT LIBRARIES & CORE CODE -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script src="js/data/elementsData.js"></script>
+  <script src="js/data/didacticContent.js"></script>
+  <script src="js/data/questionBank.js"></script>
+  <script src="js/data/dragDropBank.js"></script>
+  <script src="js/data/mindmapBank.js"></script>
+  <script src="js/data/problemBank.js"></script>
+  <script src="js/core/soundEffects.js"></script>
+  <script src="js/core/storage.js"></script>
+  <script src="js/core/adaptiveEngine.js"></script>
+  <script src="js/modules/atom3dViewer.js"></script>
+  <script src="js/modules/tugOfWarGame.js"></script>
+  <script src="js/modules/quizEngine.js"></script>
+  <script src="js/modules/teacherDashboard.js"></script>
+  <script src="js/modules/microVideoPlayer.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+# ===============================================
+# Antigravity Kit & AI Agents (Khong dua len GitHub)
+# ===============================================
+.agent/
+.agents/
+.Agent/
+.AGENTS/
+.gemini/
+
+# He dieu hanh & IDE
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Python Cache & Logs
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Temp files
+*.tmp
+*.temp
+GEMINI.md
