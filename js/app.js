@@ -91,34 +91,63 @@ function switchAuthRole(role) {
   if (window.soundFX) window.soundFX.playClick();
 }
 
+function openAuthModal(role = "student") {
+  const authModal = document.getElementById("auth-modal-overlay");
+  if (!authModal) return;
+
+  populateClassSelect();
+  switchAuthRole(role);
+  authModal.style.display = "flex";
+
+  setTimeout(() => {
+    if (role === "student") {
+      const input = document.getElementById("auth-username");
+      if (input) input.focus();
+    } else {
+      const input = document.getElementById("auth-teacher-user");
+      if (input) input.focus();
+    }
+  }, 100);
+}
+
+function continueAsGuest() {
+  const authModal = document.getElementById("auth-modal-overlay");
+  if (authModal) authModal.style.display = "none";
+
+  let user = window.appStorage.getCurrentUser();
+  if (!user) {
+    user = window.appStorage.loginStudent("Khách Trải Nghiệm", "KHTN7");
+  }
+  checkAuth();
+}
+
 function checkAuth() {
   let user = window.appStorage.getCurrentUser();
   const authModal = document.getElementById("auth-modal-overlay");
+  const guestActions = document.getElementById("auth-header-guest-actions");
   const userCard = document.getElementById("user-status-card");
 
   populateClassSelect();
 
-  // Tự động khởi tạo phiên học sinh chuẩn nếu chưa có
   if (!user) {
-    user = window.appStorage.loginStudent("Học sinh KHTN 7", "KHTN7A1");
+    // Chưa có tài khoản: Hiển thị các nút đăng nhập trên header và mở Modal Đăng nhập đón chào
+    if (guestActions) guestActions.style.display = "flex";
+    if (userCard) userCard.style.display = "none";
+    if (authModal) authModal.style.display = "flex";
   } else {
-    if (!Array.isArray(user.exploredElements)) {
-      user.exploredElements = [];
-      window.appStorage.saveUserProfile(user);
+    // Đã có tài khoản: Ẩn nút khách, hiển thị thẻ thông tin người dùng trên header
+    if (guestActions) guestActions.style.display = "none";
+    if (userCard) {
+      userCard.style.display = "flex";
+      const isTeacher = user.role === "teacher";
+      const avatarEl = document.getElementById("user-display-avatar") || document.querySelector(".user-avatar");
+      if (avatarEl) avatarEl.textContent = isTeacher ? "👩‍🏫" : "👨‍🎓";
+      const nameEl = document.getElementById("user-display-name");
+      if (nameEl) nameEl.textContent = user.fullName || user.username;
+      const classEl = document.getElementById("user-display-class");
+      if (classEl) classEl.textContent = isTeacher ? "Giáo viên KHTN" : `Lớp: ${user.classCode}`;
     }
-  }
-
-  // Ẩn modal để màn hình hoàn toàn tương tác được
-  if (authModal) authModal.style.display = "none";
-  if (userCard) {
-    userCard.style.display = "flex";
-    const isTeacher = user.role === "teacher";
-    const avatarEl = document.querySelector(".user-avatar");
-    if (avatarEl) avatarEl.textContent = isTeacher ? "👩‍🏫" : "👨‍🎓";
-    const nameEl = document.getElementById("user-display-name");
-    if (nameEl) nameEl.textContent = user.fullName || user.username;
-    const classEl = document.getElementById("user-display-class");
-    if (classEl) classEl.textContent = isTeacher ? "Quản Trị Viên" : `Lớp: ${user.classCode}`;
+    if (authModal) authModal.style.display = "none";
   }
 }
 
@@ -127,16 +156,21 @@ function handleStudentLogin(e) {
   const usernameInput = document.getElementById("auth-username");
   const classSelect = document.getElementById("auth-class-select");
 
-  const username = usernameInput.value.trim();
-  const classCode = classSelect.value.trim().toUpperCase();
+  const username = usernameInput ? usernameInput.value.trim() : "";
+  const classCode = classSelect ? classSelect.value.trim().toUpperCase() : "KHTN7A1";
 
   if (!username) {
     alert("Vui lòng nhập họ tên hoặc biệt danh học sinh!");
+    if (usernameInput) usernameInput.focus();
     return;
   }
 
-  window.appStorage.loginStudent(username, classCode);
+  const user = window.appStorage.loginStudent(username, classCode);
   if (window.soundFX) window.soundFX.playCorrect();
+
+  const authModal = document.getElementById("auth-modal-overlay");
+  if (authModal) authModal.style.display = "none";
+
   checkAuth();
   renderLeaderboardTab();
 }
@@ -149,10 +183,12 @@ function handleTeacherLogin(e) {
   const res = window.appStorage.loginTeacher(userInput, passInput);
   if (res.success) {
     if (window.soundFX) window.soundFX.playVictory();
+    const authModal = document.getElementById("auth-modal-overlay");
+    if (authModal) authModal.style.display = "none";
     checkAuth();
     switchMainTab("teacher");
   } else {
-    alert(res.message);
+    alert(res.message || "Mật khẩu giáo viên không chính xác!");
     if (window.soundFX) window.soundFX.playWrong();
   }
 }
@@ -177,10 +213,11 @@ function openTeacherLoginModal() {
 }
 
 function handleLogout() {
-  if (confirm("Bạn có chắc chắn muốn đăng xuất không?")) {
+  if (confirm("Bạn có chắc chắn muốn đăng xuất khỏi tài khoản hiện tại không?")) {
     window.appStorage.logout();
-    checkAuth();
     if (window.soundFX) window.soundFX.playClick();
+    checkAuth();
+    openAuthModal("student");
   }
 }
 

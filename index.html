@@ -47,14 +47,28 @@
             🔊 Âm thanh
           </button>
 
+          <!-- NÚT ĐĂNG NHẬP DÀNH CHO HỌC SINH VÀ GIÁO VIÊN KHI CHƯA ĐĂNG NHẬP -->
+          <div id="auth-header-guest-actions" style="display: flex; gap: 0.5rem; align-items: center;">
+            <button class="btn-header-login btn-student" onclick="openAuthModal('student')" title="Học sinh đăng nhập để lưu điểm & xếp hạng">
+              <span>🎓</span> Đăng Nhập Học Sinh
+            </button>
+            <button class="btn-header-login btn-teacher" onclick="openAuthModal('teacher')" title="Giáo viên đăng nhập để quản lý lớp học">
+              <span>👩‍🏫</span> Đăng Nhập Giáo Viên
+            </button>
+          </div>
+
+          <!-- THẺ THÔNG TIN KHI ĐÃ ĐĂNG NHẬP -->
           <div class="user-status-card" id="user-status-card" style="display: none;">
-            <div class="user-avatar">👨‍🎓</div>
+            <div class="user-avatar" id="user-display-avatar">👨‍🎓</div>
             <div class="user-meta">
               <span class="user-name" id="user-display-name">Học sinh</span>
               <span class="user-class" id="user-display-class">Lớp: KHTN7A1</span>
             </div>
-            <button class="btn-logout" title="Đổi tài khoản / Đăng xuất" onclick="handleLogout()">
-              <span>🚪</span> Đăng xuất
+            <button class="btn-switch-account" title="Đổi tài khoản Học sinh / Giáo viên khác" onclick="openAuthModal()">
+              <span>🔄</span> Đổi tài khoản
+            </button>
+            <button class="btn-logout" title="Đăng xuất khỏi phiên hiện tại" onclick="handleLogout()">
+              <span>🚪</span> Thoát
             </button>
           </div>
         </div>
@@ -209,10 +223,10 @@
   <!-- MODAL ĐĂNG NHẬP PHÂN QUYỀN (HỌC SINH / GIÁO VIÊN) -->
   <div class="auth-overlay" id="auth-modal-overlay" style="display: none;">
     <div class="auth-modal" style="position: relative;">
-      <button type="button" title="Đóng / Bỏ qua để trải nghiệm ngay" onclick="document.getElementById('auth-modal-overlay').style.display='none'" style="position: absolute; top: 12px; right: 15px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #cbd5e1; font-size: 1.1rem; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">✕</button>
+      <button type="button" title="Đóng / Bỏ qua để trải nghiệm ngay" onclick="continueAsGuest()" style="position: absolute; top: 12px; right: 15px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #cbd5e1; font-size: 1.1rem; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">✕</button>
       <img src="logo.png" alt="Logo Trường" class="auth-modal-logo" />
-      <h2 class="auth-title">APP NGUYÊN TỬ</h2>
-      <p class="auth-sub">Vũ Trụ Nguyên Tử • KHTN 7 Kết nối tri thức</p>
+      <h2 class="auth-title">ĐĂNG NHẬP HỆ THỐNG</h2>
+      <p class="auth-sub">Vũ Trụ Nguyên Tử • KHTN 7 Kết nối tri thức với cuộc sống</p>
 
       <!-- Tab chọn vai trò đăng nhập -->
       <div class="auth-role-tabs">
@@ -227,36 +241,44 @@
       <!-- FORM DÀNH CHO HỌC SINH -->
       <form class="auth-form" id="form-login-student" onsubmit="handleStudentLogin(event)">
         <div>
-          <label for="auth-username">Họ và Tên / Biệt Danh Học Sinh:</label>
-          <input type="text" id="auth-username" class="auth-input" placeholder="Ví dụ: MinhTriet_7A1" required autocomplete="off" />
+          <label for="auth-username">👤 Họ và Tên / Biệt Danh Học Sinh:</label>
+          <input type="text" id="auth-username" class="auth-input" placeholder="Ví dụ: Nguyễn Minh Triết hoặc Triet_7A1" required autocomplete="name" />
         </div>
         <div>
-          <label for="auth-class-select">Chọn Lớp Học:</label>
+          <label for="auth-class-select">🏫 Chọn Lớp Học:</label>
           <div style="display: flex; gap: 0.5rem;">
             <select id="auth-class-select" class="auth-input" style="flex: 1;">
               <!-- Sẽ được nạp động từ các lớp giáo viên đã tạo -->
             </select>
           </div>
         </div>
-        <button type="submit" class="btn-cosmic-glow" style="width: 100%; margin-top: 0.6rem;">
-          🚀 BẮT ĐẦU KHÁM PHÁ
+        <button type="submit" class="btn-cosmic-glow" style="width: 100%; margin-top: 0.6rem; padding: 0.75rem; font-size: 0.95rem;">
+          🚀 BẮT ĐẦU VÀO HỌC & LƯU BẢNG VÀNG
         </button>
+        <div style="text-align: center; margin-top: 0.4rem;">
+          <button type="button" class="btn-link-guest" onclick="continueAsGuest()">
+            👁️ Hoặc trải nghiệm nhanh với tư cách Khách
+          </button>
+        </div>
         <p class="auth-privacy-note">
-          🔒 <strong>Bảo mật 100%:</strong> Không thu thập email, số điện thoại hay thông tin cá nhân nhạy cảm của học sinh.
+          🔒 <strong>Bảo mật 100%:</strong> Không thu thập mật khẩu, email hay số điện thoại của học sinh.
         </p>
       </form>
 
       <!-- FORM DÀNH CHO GIÁO VIÊN (BẢO MẬT BẰNG MẬT KHẨU QUẢN TRỊ) -->
       <form class="auth-form" id="form-login-teacher" style="display: none;" onsubmit="handleTeacherLogin(event)">
         <div>
-          <label for="auth-teacher-user">Họ và Tên Giáo Viên:</label>
-          <input type="text" id="auth-teacher-user" class="auth-input" placeholder="Ví dụ: Cô Hoàng Mai hoặc Thầy Tuấn" required autocomplete="off" />
+          <label for="auth-teacher-user">👤 Họ và Tên Giáo Viên:</label>
+          <input type="text" id="auth-teacher-user" class="auth-input" placeholder="Ví dụ: Cô Hoàng Mai hoặc Thầy Tuấn" required autocomplete="name" />
         </div>
         <div>
-          <label for="auth-teacher-pass">Mật Khẩu Quản Trị:</label>
-          <input type="password" id="auth-teacher-pass" class="auth-input" placeholder="Nhập mật khẩu..." required />
+          <label for="auth-teacher-pass">🔑 Mật Khẩu Quản Trị:</label>
+          <input type="password" id="auth-teacher-pass" class="auth-input" placeholder="Nhập mật khẩu giáo viên..." required autocomplete="current-password" />
+          <span style="display: block; font-size: 0.75rem; color: #94a3b8; margin-top: 0.3rem;">
+            💡 <em>Mật khẩu quản trị mặc định: <strong>kntt2026</strong> hoặc <strong>1234567</strong></em>
+          </span>
         </div>
-        <button type="submit" class="btn-cosmic-glow" style="width: 100%; margin-top: 0.6rem; background: linear-gradient(135deg, #7928ca, #00ff87);">
+        <button type="submit" class="btn-cosmic-glow" style="width: 100%; margin-top: 0.6rem; padding: 0.75rem; font-size: 0.95rem;">
           👩‍🏫 VÀO TRANG QUẢN TRỊ GIÁO VIÊN
         </button>
       </form>

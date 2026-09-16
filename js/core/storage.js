@@ -178,8 +178,9 @@ class AppStorage {
     const cleanUser = String(username || "").trim();
     const cleanPass = String(password || "").trim();
 
-    // Mật khẩu xác thực giáo viên là 1234567
-    if (cleanPass === "1234567") {
+    // Mật khẩu xác thực giáo viên (hỗ trợ cả kntt2026 và 1234567)
+    const savedTeacherPass = (this.getTeacherAccount() || {}).password || "kntt2026";
+    if (cleanPass === "1234567" || cleanPass === "kntt2026" || cleanPass === savedTeacherPass) {
       const teacherName = cleanUser || "Giáo viên KHTN";
       const teacherUser = {
         username: teacherName,
